@@ -1,0 +1,3 @@
+
+.. automodule:: ppmg.ppmg
+   :members:

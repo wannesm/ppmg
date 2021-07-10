@@ -1,0 +1,15 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+tests = [
+  'coverage>=5.0.3',
+  'pytest',
+  'pytest-benchmark[histogram]>=3.2.1',
+  'networkx',
+  'pygraphviz',
+]
