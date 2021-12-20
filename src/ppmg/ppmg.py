@@ -259,7 +259,7 @@ class PPMG:
         return -1/t*l
 
     def sequences(self, min_amount=0, min_length=None, only_endpoints=False,
-                  min_diff=0):
+                  min_diff=0, max_amount=None):
         """Iterate over all possible sequences.
         :param min_amount: Only return sequences that appear at least this
             amount of times.
@@ -274,7 +274,8 @@ class PPMG:
                                              min_amount=min_amount,
                                              min_length=min_length,
                                              only_endpoints=only_endpoints,
-                                             min_diff=min_diff))
+                                             min_diff=min_diff,
+                                             max_amount=max_amount))
 
     def drop_ifall(self, condition):
         """Drop all branches where a sequence contains only nodes for which
@@ -745,7 +746,7 @@ class TreeNode(object):
         return normalized_chances
 
     def sequences(self, sequence, length, min_amount=0, min_length=None,
-                  only_endpoints=False, min_diff=0):
+                  only_endpoints=False, min_diff=0, max_amount=None):
         """Iterate over all possible sequences.
         :param min_diff: Minimal difference between current node and the only
                          child to return both sequences
@@ -758,17 +759,19 @@ class TreeNode(object):
         else:
             result = []
             cur_min_diff = self.amount
-            max_amount = 0
+            cur_max_amount = 0
             for child in self.children.values():
-                if child.amount >= min_amount:
+                if child.amount >= min_amount and \
+                        (max_amount is None or child.amount <= max_amount):
                     cur_min_diff = min(cur_min_diff, self.amount-child.amount)
-                    max_amount = max(max_amount, child.amount)
+                    cur_max_amount = max(cur_max_amount, child.amount)
                     result.extend(child.sequences(sequence + [self.name],
                                                   length + 1,
                                                   min_amount=min_amount,
                                                   min_length=min_length,
                                                   only_endpoints=only_endpoints,
-                                                  min_diff=min_diff))
+                                                  min_diff=min_diff,
+                                                  max_amount=max_amount))
             if only_endpoints:
                 if len(result) == 0 and (min_length is None or len(sequence) >= min_length):
                     # Also include nodes of which the children will not produce
